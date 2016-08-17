@@ -2,6 +2,45 @@
 {% load static from staticfiles %}
 
 {% block content %}
-<p class="lead">Here will be tables</p>
-<p>{{ result }}</p>
+<form action="{% url 'statistics' %}" method="post">
+    {% csrf_token %}
+
+        <div class="form-group {% if errors %}has-error{% endif %}">
+			<label for="date_from">Date from</label>
+			<input type="text" class="form-control" id="date_from" value="{{ request.POST.date_from }}" name="date_from">
+			<span class="help-block">{{ errors.date_from }}</span>
+		</div>
+
+		<div class="form-group {% if errors %}has-error{% endif %}">
+			<label for="date_to">Date to</label>
+			<input type="text" class="form-control" id="date_to" value="{{ request.POST.date_to }}" name="date_to">
+			<span class="help-block">{{ errors.date_to }}</span>
+		</div>
+
+		<button type="submit" name="get_stat" class="btn btn-primary">Get statistics</button>
+</form>
+
+<div>{{ turnover.sum }}</div>
+<table class="table table-hover table-striped">
+    <thead>
+        <tr>
+            <th>INDEX</th>
+            {% for item in dates %}
+            <th>{{ item|date:"Y-m-d" }}</th>
+            {% endfor %}
+            <th>Difference, %<br>(betwen first and last)</th>
+            <th>Difference<br>(betwen first and last)</th>
+        </tr>
+<!--&gt;>> str(df.index[0].date())-->
+<!--'2015-10-11'-->
+    </thead>
+    <tbody>
+        <tr>
+            <th>TURNOVER</th>
+            {% for item in turnover %}
+            <td>{{ item }}</td>
+            {% endfor %}
+        </tr>
+    </tbody>
+</table>
 {% endblock content %}

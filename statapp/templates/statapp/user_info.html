@@ -1,0 +1,32 @@
+{% extends "statapp/base.html" %}
+{% load static from staticfiles %}
+
+{% block content %}
+<h3>Information about user "{{ request.session.key }}":</h3>
+<table class="table table-hover table-striped">
+    <tbody>
+        <tr>
+            <td>name</td>
+            <td><strong>{{ dw.name }}</strong></td>
+        </tr>
+        <tr>
+            <td>shops</td>
+            <td><strong>
+                <ul>
+                    {% for shop, value in dw.shops.items %}
+                    <li>{{ shop }}: {{ value }}</li>
+                    {% endfor %}
+                </ul>
+            </strong></td>
+        </tr>
+        <tr>
+            <td>date_from</td>
+            <td><strong>{{ dw.date_from }}</strong></td>
+        </tr>
+        <tr>
+            <td>date_to</td>
+            <td><strong>{{ dw.date_to }}</strong></td>
+        </tr>
+    </tbody>
+</table>
+{% endblock content %}

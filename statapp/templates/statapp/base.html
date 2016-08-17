@@ -21,17 +21,13 @@
 		<nav class="navbar navbar-inverse" id="nav">
 			<div class="container-fluid">
 				<div class="navbar-header">
-					<span class="navbar-brand">Statistics!</span>
+					<a class="navbar-brand" href="{% url 'statistics' %}">Statistics!</a>
 				</div>
 				{% if request.session.key %}
 				<ul class="nav navbar-nav navbar-right">
-					<li><a><span class="glyphicon glyphicon-user"></span>
-						{{ request.session.name }}</a></li>
+					<li><a href="{% url 'user_info' %}"><span class="glyphicon glyphicon-user"></span>
+						{{ request.session.key }}</a></li>
 					<li><a href="{% url 'logout' %}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
-				</ul>
-				{% else %}
-				<ul class="nav navbar-nav">
-					<li><a href="{% url 'index' %}">home</a></li>
 				</ul>
 				{% endif %}
 			</div>

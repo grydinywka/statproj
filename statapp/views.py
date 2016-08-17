@@ -5,6 +5,10 @@ from django.contrib import messages
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
 from dwapi import datawiz
+import pandas as pd
+import requests_cache
+
+requests_cache.install_cache('test_cache', backend='redis', expire_after=300)
 
 
 def index(request):
@@ -35,7 +39,9 @@ def login(request):
 
         request.session['key'] = data["MyClientID"]
         request.session['secret'] = data["MyClientSecret"]
-        request.session['name'] = data["dw"]['name']
+        # request.session['name'] = data["dw"]['name']
+        request.session['dw_info'] = data["dw"]
+        request.session['dw'] = dw
 
         messages.info(request, "You've loged in")
         return HttpResponseRedirect(reverse('statistics'))
@@ -48,10 +54,34 @@ def logout(request):
     return HttpResponseRedirect(reverse('index'))
 
 
+def user_info(request):
+    if  request.session.has_key('dw_info'):
+        dw = request.session['dw_info']
+
+        return render(request, 'statapp/user_info.html', {'dw': dw})
+
+    return HttpResponseRedirect(reverse('index'))
+
+
+# @cache_page(60 * 15)
 def statistics(request):
-    if cache.get('foo'):
-        result = cache.get('foo')
-    else:
-        cache.set('foo', 'bar2', 30)
-        result = 'nofoo'
-    return render(request, 'statapp/statistics.html', {'result': result})
+    if  request.session.has_key('dw_info'):
+
+        if request.method == 'POST' and request.POST.get('get_stat') is not None:
+            data= {}
+
+            if request.POST.get('date_from'):
+                data['date_from'] = str(request.POST.get('date_from'))
+            if request.POST.get('date_to'):
+                data['date_to'] = str(request.POST.get('date_to'))
+            dw = request.session['dw']
+            # print data['date_from']
+            pandas_res = dw.get_categories_sale(**data)
+            turnover = pandas_res.sum(axis=1)
+            dates = pandas_res.index
+            result = {}
+
+            return render(request, 'statapp/statistics.html', {'turnover': turnover, 'dates': dates})
+        return render(request, 'statapp/statistics.html', {})
+
+    return HttpResponseRedirect(reverse('index'))
