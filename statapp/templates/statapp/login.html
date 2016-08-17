@@ -1,0 +1,24 @@
+{% extends "statapp/base.html" %}
+{% load static from staticfiles %}
+
+{% block content %}
+    <p>{{ request.session.key }}</p>
+    <p>{{ request.session.secret }}</p>
+    <form action="{% url 'login' %}" method="post">
+        {% csrf_token %}
+
+        <div class="form-group {% if errors %}has-error{% endif %}">
+			<label for="login">Your key(login)</label>
+			<input type="text" class="form-control" id="login" value="{{ request.POST.login }}" name="login">
+			<span class="help-block">{{ errors.login }}</span>
+		</div>
+
+		<div class="form-group {% if errors %}has-error{% endif %}">
+			<label for="password">Your secret (password)</label>
+			<input type="password" class="form-control" id="password" value="{{ request.POST.password }}" name="password">
+			<span class="help-block">{{ errors.password }}</span>
+		</div>
+
+		<button type="submit" name="submit_button" class="btn btn-primary">Login</button>
+    </form>
+{% endblock content %}

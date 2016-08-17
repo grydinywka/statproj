@@ -15,7 +15,12 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from statapp import views
 
 urlpatterns = [
+    url(r'^$', views.index, name='index'),
+    url(r'^login$', views.login, name='login'),
+    url(r'^logout$', views.logout, name='logout'),
+    url(r'^stat$', views.statistics, name='statistics'),
     url(r'^admin/', admin.site.urls),
 ]

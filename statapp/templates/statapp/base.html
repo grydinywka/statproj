@@ -1,0 +1,95 @@
+{% load static from staticfiles %}
+
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8"/>
+		<title>Statictics {% block meta_title %}{% endblock meta_title %}</title>
+		<meta name="description"
+			  value='Statapp' >
+		<meta name="viewport" content="width=device-width, initial-scale=1" >
+
+		<!-- Style Section -->
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/bootstrap/3.3.0/css/bootstrap.min.css" >
+		<link rel="stylesheet" href="{% static 'css/main.css' %}" />
+
+	</head>
+
+	<body>
+		<!-- Start Navbar -->
+		<nav class="navbar navbar-inverse" id="nav">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<span class="navbar-brand">Statistics!</span>
+				</div>
+				{% if request.session.key %}
+				<ul class="nav navbar-nav navbar-right">
+					<li><a><span class="glyphicon glyphicon-user"></span>
+						{{ request.session.name }}</a></li>
+					<li><a href="{% url 'logout' %}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+				</ul>
+				{% else %}
+				<ul class="nav navbar-nav">
+					<li><a href="{% url 'index' %}">home</a></li>
+				</ul>
+				{% endif %}
+			</div>
+		</nav>
+		<!-- Start Container -->
+		<div class="container">
+
+
+			<div class="row" id="messages">
+				<div class="col-xs-12">
+					<!-- Status Message -->
+					{% block status_message %}
+
+					{% if messages %}
+						{% for message in messages %}
+							<div class="alert alert-warning">
+								{{ message }}
+							</div>
+						{% endfor %}
+					{% endif %}
+
+					{% endblock %}
+				</div>
+			</div>
+
+            <div class="row">
+				<div class="col-xs-8"><h2>{% block title %}{% endblock title %}</h2></div>
+			</div>
+
+			<!-- Start Content -->
+			<div class="row" id="legend">
+				<div class="col-xs-12">
+                    {% block content %}{% endblock content %}
+				</div>
+			</div>
+			<!-- End Content -->
+
+			<!-- Start Footer -->
+			<div class="row" id="footer">
+                <hr class="divider">
+				<div class="col-xs-12">
+					<span class="glyphicon glyphicon-copyright-mark"></span> 2016 Statictics
+				</div>
+			</div>
+			<!-- End Footer -->
+
+		</div>
+		<!-- End Container -->
+
+		<!-- JavaScript Section -->
+		<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js" type="text/javascript"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js" type="text/javascript"></script>
+        <script src="https://www.google.com/jsapi" type="text/javascript"></script>
+		<script src="https://cdn.jsdelivr.net/bootstrap/3.3.0/js/bootstrap.min.js" type="text/javascript"></script>
+
+        <script src="{% static 'js/main.js' %}" type="text/javascript"></script>
+		{% block extra_java_script %}{% endblock %}
+	</body>
+
+</html>

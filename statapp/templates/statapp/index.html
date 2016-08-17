@@ -1,0 +1,9 @@
+{% extends "statapp/base.html" %}
+{% load static from staticfiles %}
+
+{% block content %}
+<div class="enter">
+    <a href="{% url 'login' %}" class="btn btn-default btn-lg"><span
+            class="glyphicon glyphicon-log-in"></span> Login</a>
+</div>
+{% endblock content %}
