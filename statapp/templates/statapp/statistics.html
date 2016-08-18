@@ -17,30 +17,13 @@
 			<span class="help-block">{{ errors.date_to }}</span>
 		</div>
 
-		<button type="submit" name="get_stat" class="btn btn-primary">Get statistics</button>
+		<button type="submit" name="get_stat" id="get_stat" class="btn btn-primary">Get statistics</button>
 </form>
 
-<div>{{ turnover.sum }}</div>
-<table class="table table-hover table-striped">
-    <thead>
-        <tr>
-            <th>INDEX</th>
-            {% for item in dates %}
-            <th>{{ item|date:"Y-m-d" }}</th>
-            {% endfor %}
-            <th>Difference, %<br>(betwen first and last)</th>
-            <th>Difference<br>(betwen first and last)</th>
-        </tr>
-<!--&gt;>> str(df.index[0].date())-->
-<!--'2015-10-11'-->
-    </thead>
-    <tbody>
-        <tr>
-            <th>TURNOVER</th>
-            {% for item in turnover %}
-            <td>{{ item }}</td>
-            {% endfor %}
-        </tr>
-    </tbody>
-</table>
+<!--<div>{{ turnover.sum }}</div>-->
+<div id="turnover">
+	{% if show_tables %}
+    {% include "statapp/stat_turnover.html" %}
+	{% endif %}
+</div>
 {% endblock content %}
