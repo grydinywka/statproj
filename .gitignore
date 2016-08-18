@@ -3,4 +3,4 @@
 *.egg-info
 *.mo
 *.egg
-pythonAPI
+../pythonAPI

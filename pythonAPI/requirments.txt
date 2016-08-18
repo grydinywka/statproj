@@ -1,0 +1,4 @@
+requests
+httpsig
+pandas
+nose

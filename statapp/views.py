@@ -1,15 +1,13 @@
-from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
-from django.core.urlresolvers import reverse
-from django.contrib import messages
-from django.views.decorators.cache import cache_page
-from django.core.cache import cache
-from dwapi import datawiz
-import pandas as pd
-import requests_cache
 from datetime import datetime
 
-# requests_cache.install_cache('test_cache', backend='redis', expire_after=300)
+import requests_cache
+from django.contrib import messages
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from pythonAPI.dwapi import datawiz
+
+requests_cache.install_cache('test_cache', backend='redis', expire_after=300)
 
 
 def split_df(index_df, df, df_qty, pd_receipt_qty, span):
@@ -113,12 +111,8 @@ def statistics(request):
                     if not int(shop) in request.session['dw_info']['shops'].keys():
                         errors['shops'] = 'some shop is not available for you %s' % (shop)
 
-                # print data['shops']
-                # print form_data.getlist('shops')
-
             if errors:
                 messages.error(request, 'Please correct errors!')
-                shops1 = [int(item) for item in form_data.getlist('shops')]
                 return render(request, 'statapp/statistics.html', {'errors': errors, "shops1": form_data.getlist('shops')})
             dw = request.session['dw']
             # print data['date_from']

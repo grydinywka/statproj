@@ -4,5 +4,6 @@
     border: 0px solid red;
 }
 
-#turnover {
+label {
+    text-align: right;
 }

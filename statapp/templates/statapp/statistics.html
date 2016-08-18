@@ -7,23 +7,27 @@
     {% csrf_token %}
 
         <div class="form-group {% if errors.date_from %}has-error{% endif %}">
-			<label for="date_from">Date from</label>
+			<label for="date_from" class="col-sm-2 control-label">Date from</label>
+			<div class="col-sm-10">
 			<input type="text" class="form-control" id="date_from" value="{{ request.POST.date_from }}"
 				   name="date_from" placeholder="YYYY-MM-DD">
 			<span class="help-block">{{ errors.date_from }}</span>
+			</div>
 		</div>
 
 		<div class="form-group {% if errors.date_to %}has-error{% endif %}">
-			<label for="date_to">Date to</label>
-			<input type="text" class="form-control" id="date_to" value="{{ request.POST.date_to }}" name="date_to"
-				   placeholder="YYYY-MM-DD">
-			<span class="help-block">{{ errors.date_to }}</span>
+			<label for="date_to" class="col-sm-2 control-label">Date to</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" id="date_to" value="{{ request.POST.date_to }}" name="date_to"
+					   placeholder="YYYY-MM-DD">
+				<span class="help-block">{{ errors.date_to }}</span>
+			</div>
 		</div>
 
 		<div class="form-group {% if errors.shops %}has-error{% endif %}">
 			<label for="shops" class="col-sm-2 control-label">Shops</label>
 			<div class="col-sm-10">
-				<select name="shops" id="shops"	class="form-control" multiple>
+				<select name="shops" id="shops"	class="form-control" multiple size="3">
 					<option disabled>Choose shops (for multiple choice press Ctrl))</option>
 					{% for shop, title in request.session.dw_info.shops.items %}
 						<option value="{{ shop }}" {% if shop|get_str in shops1 %}selected{% endif %}
@@ -35,7 +39,12 @@
 			</div>
 		</div>
 
-		<button type="submit" name="get_stat" id="get_stat" class="btn btn-primary">Get statistics</button>
+		<div class="form-group">
+			<label class="col-sm-2 control-label"></label>
+			<div class="col-sm-10">
+				<button type="submit" name="get_stat" id="get_stat" class="btn btn-primary">Get statistics</button>
+			</div>
+		</div>
 </form>
 
 <div>
