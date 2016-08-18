@@ -141,7 +141,8 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 PORTAL_URL = 'http://localhost:8000'
 
 
-redis_url = urlparse.urlparse(os.environ.get('REDIS_URL', 'redis://localhost:6379'))
+# redis_url = urlparse.urlparse(os.environ.get('REDIS_URL', 'redis://localhost:6379'))
+redis_url = urlparse.urlparse(os.environ.get('REDIS_URL', 'REDISCLOUD_URL'))
 CACHES = {
     "default": {
          "BACKEND": "redis_cache.RedisCache",
