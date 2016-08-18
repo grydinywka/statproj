@@ -49,15 +49,18 @@ def login(request):
         }
 
         try:
-            dw = datawiz.DW(data["MyClientID"], data["MyClientSecret"])
+            if data["MyClientID"] and data["MyClientSecret"]:
+                dw = datawiz.DW(data["MyClientID"], data["MyClientSecret"])
+            else:
+                dw = datawiz.DW()
             data['dw'] = dw.get_client_info()
-        except Exception:
-            messages.error(request, "Please, type correct key and secret")
+        except Exception as e:
+            messages.error(request, "Please, type correct key and secret, %s" % e)
             errors['login'] = 'check key'
             errors['password'] = 'check secret'
             return render(request, 'statapp/login.html', {'errors': errors})
 
-        request.session['key'] = data["MyClientID"]
+        request.session['key'] = data["MyClientID"] or 'anonim'
         request.session['secret'] = data["MyClientSecret"]
         # request.session['name'] = data["dw"]['name']
         request.session['dw_info'] = data["dw"]
