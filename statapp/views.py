@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from pythonAPI.dwapi import datawiz
+from dwapi import datawiz
 
 requests_cache.install_cache('test_cache', backend='redis', expire_after=300)
 
