@@ -9,7 +9,7 @@ import pandas as pd
 import requests_cache
 from datetime import datetime
 
-requests_cache.install_cache('test_cache', backend='redis', expire_after=300)
+# requests_cache.install_cache('test_cache', backend='redis', expire_after=300)
 
 
 def split_df(index_df, df, df_qty, pd_receipt_qty, span):
@@ -87,29 +87,39 @@ def user_info(request):
 
 # @cache_page(60 * 15)
 def statistics(request):
-    if  request.session.has_key('dw_info'):
+    if request.session.has_key('dw_info'):
 
         if request.method == 'POST' and request.POST.get('get_stat') is not None:
             form_data = request.POST
             data= {}
             errors = {}
 
-            if request.POST.get('date_from'):
-                data['date_from'] = str(request.POST.get('date_from').strip())
+            if form_data.get('date_from'):
+                data['date_from'] = str(form_data.get('date_from').strip())
                 try:
                     datetime.strptime(data['date_from'], '%Y-%m-%d')
                 except Exception:
                     errors['date_from'] = 'Input date at YYYY-MM-DD format or left blank.'
-            if request.POST.get('date_to'):
-                data['date_to'] = str(request.POST.get('date_to').strip())
+            if form_data.get('date_to'):
+                data['date_to'] = str(form_data.get('date_to').strip())
                 try:
                     datetime.strptime(data['date_to'], '%Y-%m-%d')
                 except Exception:
                     errors['date_to'] = 'Input date at YYYY-MM-DD format or left blank.'
 
+            if form_data.getlist('shops'):
+                data['shops'] = form_data.getlist('shops')
+                for shop in form_data.getlist('shops'):
+                    if not int(shop) in request.session['dw_info']['shops'].keys():
+                        errors['shops'] = 'some shop is not available for you %s' % (shop)
+
+                # print data['shops']
+                # print form_data.getlist('shops')
+
             if errors:
                 messages.error(request, 'Please correct errors!')
-                return render(request, 'statapp/statistics.html', {'errors': errors})
+                shops1 = [int(item) for item in form_data.getlist('shops')]
+                return render(request, 'statapp/statistics.html', {'errors': errors, "shops1": form_data.getlist('shops')})
             dw = request.session['dw']
             # print data['date_from']
             try:
@@ -117,7 +127,7 @@ def statistics(request):
                 pandas_res_by_qty = dw.get_categories_sale(by='qty', **data)
                 pandas_res_by_receipt_qty = dw.get_categories_sale(by='receipts_qty', **data)
             except Exception:
-                messages.error(request, 'Try again because datawiz do not response')
+                messages.error(request, 'Try again because datawiz does not response!')
                 return render(request, 'statapp/statistics.html', {})
 
             # turnover = pandas_res.sum(axis=1)
@@ -129,7 +139,7 @@ def statistics(request):
 
 
             return render(request, 'statapp/statistics.html', {'show_tables':
-                True, 'pandas_res': pandas_res_by_turnover, 'pandas_list': result})
+                True, 'pandas_list': result})
         return render(request, 'statapp/statistics.html', {})
 
     return HttpResponseRedirect(reverse('index'))
