@@ -10,7 +10,7 @@
 			<label for="date_from" class="col-sm-2 control-label">Date from</label>
 			<div class="col-sm-10">
 			<input type="text" class="form-control" id="date_from" value="{{ request.POST.date_from }}"
-				   name="date_from" placeholder="YYYY-MM-DD">
+				   name="date_from" placeholder="DD-MM-YYYY">
 			<span class="help-block">{{ errors.date_from }}</span>
 			</div>
 		</div>
@@ -19,7 +19,7 @@
 			<label for="date_to" class="col-sm-2 control-label">Date to</label>
 			<div class="col-sm-10">
 				<input type="text" class="form-control" id="date_to" value="{{ request.POST.date_to }}" name="date_to"
-					   placeholder="YYYY-MM-DD">
+					   placeholder="DD-MM-YYYY">
 				<span class="help-block">{{ errors.date_to }}</span>
 			</div>
 		</div>

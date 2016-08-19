@@ -31,6 +31,18 @@ def split_df(index_df, df, df_qty, pd_receipt_qty, span):
     return list_df
 
 
+def stat_table1(pd, pd_qty, pd_receipt_qty):
+    limit = len(pd)-1
+    list_pd = {'index': (pd.index[limit], pd.index[0]),
+               'pd': (pd.values[limit].sum(), pd.values[0].sum()),
+               'pd_qty': (pd_qty.values[limit].sum(), pd_qty.values[0].sum()),
+               'pd_receipt_qty': (pd_receipt_qty.values[limit].sum(), pd_receipt_qty.values[0].sum())
+               }
+
+    list_pd['ave_receipt'] = (list_pd['pd'][0] / list_pd['pd_receipt_qty'][0],
+                              list_pd['pd'][1] / list_pd['pd_receipt_qty'][1])
+    return list_pd
+
 def index(request):
     if request.session.has_key('key'):
         return HttpResponseRedirect(reverse('statistics'))
@@ -49,10 +61,10 @@ def login(request):
         }
 
         try:
-            if data["MyClientID"] and data["MyClientSecret"]:
-                dw = datawiz.DW(data["MyClientID"], data["MyClientSecret"])
-            else:
-                dw = datawiz.DW()
+            # if data["MyClientID"] and data["MyClientSecret"]:
+            dw = datawiz.DW(data["MyClientID"], data["MyClientSecret"])
+            # else:
+            #     dw = datawiz.DW()
             data['dw'] = dw.get_client_info()
         except Exception as e:
             messages.error(request, "Please, type correct key and secret, %s" % e)
@@ -60,7 +72,7 @@ def login(request):
             errors['password'] = 'check secret'
             return render(request, 'statapp/login.html', {'errors': errors})
 
-        request.session['key'] = data["MyClientID"] or 'anonim'
+        request.session['key'] = data["MyClientID"]
         request.session['secret'] = data["MyClientSecret"]
         # request.session['name'] = data["dw"]['name']
         request.session['dw_info'] = data["dw"]
@@ -98,15 +110,15 @@ def statistics(request):
             if form_data.get('date_from'):
                 data['date_from'] = str(form_data.get('date_from').strip())
                 try:
-                    datetime.strptime(data['date_from'], '%Y-%m-%d')
+                    data['date_from'] = datetime.strptime(data['date_from'], '%d-%m-%Y')
                 except Exception:
-                    errors['date_from'] = 'Input date at YYYY-MM-DD format or left blank.'
+                    errors['date_from'] = 'Input date at DD-MM-YYYY format or left blank.'
             if form_data.get('date_to'):
                 data['date_to'] = str(form_data.get('date_to').strip())
                 try:
-                    datetime.strptime(data['date_to'], '%Y-%m-%d')
+                    data['date_to'] = datetime.strptime(data['date_to'], '%d-%m-%Y')
                 except Exception:
-                    errors['date_to'] = 'Input date at YYYY-MM-DD format or left blank.'
+                    errors['date_to'] = 'Input date at DD-MM-YYYY format or left blank.'
 
             if form_data.getlist('shops'):
                 data['shops'] = form_data.getlist('shops')
@@ -117,6 +129,7 @@ def statistics(request):
             if errors:
                 messages.error(request, 'Please correct errors!')
                 return render(request, 'statapp/statistics.html', {'errors': errors, "shops1": form_data.getlist('shops')})
+
             dw = request.session['dw']
             # print data['date_from']
             try:
@@ -131,12 +144,13 @@ def statistics(request):
             # dates = pandas_res.index
             result = split_df(pandas_res_by_turnover.index, pandas_res_by_turnover.sum(axis=1),
                               pandas_res_by_qty.sum(axis=1), pandas_res_by_receipt_qty.sum(axis=1), 4)
+            table1_data = stat_table1(pandas_res_by_turnover, pandas_res_by_qty,pandas_res_by_receipt_qty)
             # print pandas_res
             # print result
 
 
             return render(request, 'statapp/statistics.html', {'show_tables':
-                True, 'pandas_list': result})
+                True, 'pandas_list': result, 'table1_data': table1_data})
         return render(request, 'statapp/statistics.html', {})
 
     return HttpResponseRedirect(reverse('index'))

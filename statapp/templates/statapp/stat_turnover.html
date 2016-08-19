@@ -1,15 +1,14 @@
 {% load pandas_slice_sum %}
 
-{% for index_pd, pd, pd_qty, pd_receipt_qty in pandas_list %}
 <table class="table table-hover table-striped">
     <thead>
         <tr>
             <th>INDEX</th>
-            {% for item in index_pd %}
-            <th>{{ item|date:"Y-m-d" }}</th>
+            {% for item in table1_data.index %}
+            <th>{{ item|date:"d-m-Y" }}</th>
             {% endfor %}
-            <!--<th>Difference, %<br>(between first and last)</th>-->
-            <!--<th>Difference<br>(between first and last)</th>-->
+            <th>Difference, %</th>
+            <th>Difference</th>
         </tr>
 <!--&gt;>> str(df.index[0].date())-->
 <!--'2015-10-11'-->
@@ -17,22 +16,28 @@
     <tbody>
         <tr>
             <td>TURNOVER</td>
-            {% for item in pd %}
+            {% for item in table1_data.pd %}
             <td>{{ item }}</td>
             {% endfor %}
         </tr>
         <tr>
             <td>PRODUCTS QYANTITY</td>
-            {% for item in pd_qty %}
+            {% for item in table1_data.pd_qty %}
             <td>{{ item }}</td>
             {% endfor %}
         </tr>
         <tr>
             <td>RECEIPTS QYANTITY</td>
-            {% for item in pd_receipt_qty %}
+            {% for item in table1_data.pd_receipt_qty %}
             <td>{{ item }}</td>
             {% endfor %}
         </tr>
+        <tr>
+            <td>AVERAGE RECEIPT</td>
+            {% for item in table1_data.ave_receipt %}
+            <td>{{ item }}</td>
+            {% endfor %}
+        </tr>
+
     </tbody>
 </table>
-{% endfor %}
