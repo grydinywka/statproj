@@ -7,7 +7,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from dwapi import datawiz
 
-requests_cache.install_cache('test_cache', backend='mongo', expire_after=300)
+requests_cache.install_cache('test_cache', backend='memory', expire_after=300)
 
 
 def split_df(index_df, df, df_qty, pd_receipt_qty, span):
