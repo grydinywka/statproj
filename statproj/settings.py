@@ -141,9 +141,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 PORTAL_URL = 'http://localhost:8000'
 
 
-# redis_url = urlparse.urlparse(os.environ.get('REDIS_URL', 'redis://localhost:6379'))
-# redis_url = urlparse.urlparse(os.environ.get('REDIS_URL', 'redis://rediscloud:3L6qi9nSAjoHFRNC@redis-14886.c8.us-east-1-3.ec2.cloud.redislabs.com:14886'))
-redis_url = urlparse.urlparse(os.environ.get('REDISCLOUD_URL','redis://rediscloud:3L6qi9nSAjoHFRNC@redis-14886.c8.us-east-1-3.ec2.cloud.redislabs.com:14886'))
+redis_url = urlparse.urlparse(os.environ.get('REDIS_URL', 'redis://localhost:6379'))
 CACHES = {
     "default": {
          "BACKEND": "redis_cache.RedisCache",
