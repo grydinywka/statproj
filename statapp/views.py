@@ -3,7 +3,7 @@ from datetime import datetime
 import requests_cache
 from django.contrib import messages
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from dwapi import datawiz
 import pandas
@@ -40,7 +40,7 @@ def diffabs(x, y):
     return x-y
 
 
-def stat_table1(request, pd, pd_qty, pd_receipt_qty):
+def stat_table1(pd, pd_qty, pd_receipt_qty):
     limit = len(pd)-1
     table = pandas.DataFrame({
                             'TURNOVER': [pd.values[limit].sum(), pd.values[0].sum()],
@@ -127,36 +127,42 @@ def user_info(request):
     return HttpResponseRedirect(reverse('index'))
 
 
+def check_form(request, form_data):
+    data = {}
+    errors = {}
+    if form_data.get('date_from'):
+        data['date_from'] = str(form_data.get('date_from').strip())
+        try:
+            data['date_from'] = datetime.strptime(data['date_from'], '%d-%m-%Y')
+        except Exception:
+            errors['date_from'] = 'Input date at DD-MM-YYYY format or left blank.'
+    if form_data.get('date_to'):
+        data['date_to'] = str(form_data.get('date_to').strip())
+        try:
+            data['date_to'] = datetime.strptime(data['date_to'], '%d-%m-%Y')
+        except Exception:
+            errors['date_to'] = 'Input date at DD-MM-YYYY format or left blank.'
+
+    if form_data.getlist('shops'):
+        data['shops'] = form_data.getlist('shops')
+
+        for shop in form_data.getlist('shops'):
+            if not int(shop) in request.session['dw_info']['shops'].keys():
+                errors['shops'] = 'some shop is not available for you %s' % (shop)
+
+    if errors:
+        messages.error(request, 'Please correct errors!')
+        return render(request, 'statapp/statistics.html', {'errors': errors, "shops1": form_data.getlist('shops')})
+
+    return data, errors
+
+
 def statistics(request):
     if request.session.has_key('dw_info'):
 
         if request.method == 'POST' and request.POST.get('get_stat') is not None:
             form_data = request.POST
-            data= {}
-            errors = {}
-
-            if form_data.get('date_from'):
-                data['date_from'] = str(form_data.get('date_from').strip())
-                try:
-                    data['date_from'] = datetime.strptime(data['date_from'], '%d-%m-%Y')
-                except Exception:
-                    errors['date_from'] = 'Input date at DD-MM-YYYY format or left blank.'
-            if form_data.get('date_to'):
-                data['date_to'] = str(form_data.get('date_to').strip())
-                try:
-                    data['date_to'] = datetime.strptime(data['date_to'], '%d-%m-%Y')
-                except Exception:
-                    errors['date_to'] = 'Input date at DD-MM-YYYY format or left blank.'
-
-            if form_data.getlist('shops'):
-                data['shops'] = form_data.getlist('shops')
-                for shop in form_data.getlist('shops'):
-                    if not int(shop) in request.session['dw_info']['shops'].keys():
-                        errors['shops'] = 'some shop is not available for you %s' % (shop)
-
-            if errors:
-                messages.error(request, 'Please correct errors!')
-                return render(request, 'statapp/statistics.html', {'errors': errors, "shops1": form_data.getlist('shops')})
+            data, errors = check_form(request, request.POST)
 
             dw = request.session['dw']
             try:
@@ -171,14 +177,19 @@ def statistics(request):
             # dates = pandas_res.index
             # result = split_df(pandas_res_by_turnover.index, pandas_res_by_turnover.sum(axis=1),
             #                   pandas_res_by_qty.sum(axis=1), pandas_res_by_receipt_qty.sum(axis=1), 4)
-            table1 = stat_table1(request, pandas_res_by_turnover, pandas_res_by_qty,
+            table1 = stat_table1(pandas_res_by_turnover, pandas_res_by_qty,
                                              pandas_res_by_receipt_qty)
 
             return render(request, 'statapp/statistics.html', {
                             'show_tables': True, 'table': table1.T.to_html(
                                 classes="table table-hover table-striped",
                                 float_format=lambda x: '%.2f' % x
-                            )})
+                            ),
+                            "shops": form_data.getlist('shops')})
         return render(request, 'statapp/statistics.html', {})
 
     return HttpResponseRedirect(reverse('index'))
+
+
+def reports_change(request):
+    return HttpResponse('<p>reports_change </p>')

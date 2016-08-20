@@ -1,4 +1,6 @@
 <div id="table1">
+    <span class="lead">Main data( Shops: {% for shop in shops %} #{{ shop }} {% empty %} all  shops {% endfor %} )
+        :</span>
     {{ table | safe }}
 </div>
 

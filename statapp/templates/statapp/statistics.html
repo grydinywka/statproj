@@ -3,7 +3,7 @@
 {% load util %}
 
 {% block content %}
-<form action="{% url 'statistics' %}" method="post">
+<form action="{% url 'statistics' %}" method="post" enctype="multipart/form-data" role="form" class="form-horizontal">
     {% csrf_token %}
 
         <div class="form-group {% if errors.date_from %}has-error{% endif %}">
@@ -25,7 +25,7 @@
 		</div>
 
 		<div class="form-group {% if errors.shops %}has-error{% endif %}">
-			<label for="shops" class="col-sm-2 control-label">Shops</label>
+			<label for="shops" class="col-sm-2 control-label">Shops<br>(leave blank for all shops)</label>
 			<div class="col-sm-10">
 				<select name="shops" id="shops"	class="form-control" multiple size="3">
 					<option disabled>Choose shops (for multiple choice press 'Ctrl' or 'Command' on mac))</option>
