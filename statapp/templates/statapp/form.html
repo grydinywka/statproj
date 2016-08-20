@@ -1,9 +1,6 @@
-{% extends "statapp/base.html" %}
-{% load static from staticfiles %}
 {% load util %}
 
-{% block content %}
-<form action="{% url 'statistics' %}" method="post" enctype="multipart/form-data" role="form" class="form-horizontal">
+<form action="{% url 'stat_form' %}" method="post" enctype="multipart/form-data" role="form" class="form-horizontal">
     {% csrf_token %}
 
         <div class="form-group {% if errors.date_from %}has-error{% endif %}">
@@ -46,10 +43,3 @@
 			</div>
 		</div>
 </form>
-
-
-{% if show_tables %}
-{% include "statapp/stat_turnover.html" %}
-{% endif %}
-
-{% endblock content %}
