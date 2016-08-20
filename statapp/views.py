@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from dwapi import datawiz
+import pandas
 
 requests_cache.install_cache('test_cache', backend='memory', expire_after=300)
 
@@ -31,17 +32,45 @@ def split_df(index_df, df, df_qty, pd_receipt_qty, span):
     return list_df
 
 
-def stat_table1(pd, pd_qty, pd_receipt_qty):
-    limit = len(pd)-1
-    list_pd = {'index': (pd.index[limit], pd.index[0]),
-               'pd': (pd.values[limit].sum(), pd.values[0].sum()),
-               'pd_qty': (pd_qty.values[limit].sum(), pd_qty.values[0].sum()),
-               'pd_receipt_qty': (pd_receipt_qty.values[limit].sum(), pd_receipt_qty.values[0].sum())
-               }
+def diff(x, y):
+    return 100 - (y*100/x)
 
-    list_pd['ave_receipt'] = (list_pd['pd'][0] / list_pd['pd_receipt_qty'][0],
-                              list_pd['pd'][1] / list_pd['pd_receipt_qty'][1])
-    return list_pd
+
+def diffabs(x, y):
+    return x-y
+
+
+def stat_table1(request, pd, pd_qty, pd_receipt_qty):
+    limit = len(pd)-1
+    table = pandas.DataFrame({
+                            'TURNOVER': [pd.values[limit].sum(), pd.values[0].sum()],
+                          })
+    table['PRODUCTS QYANTITY'] = [pd_qty.values[limit].sum(), pd_qty.values[0].sum()]
+    table['RECEIPTS QYANTITY'] = [pd_receipt_qty.values[limit].sum(), pd_receipt_qty.values[0].sum()]
+    table['AVERAGE RECEIPT'] = table['TURNOVER']/table['RECEIPTS QYANTITY']
+
+    pre_len_table = len(table)
+    len_table = pre_len_table + 1
+    for name in table.columns:
+        table = table.set_value(pre_len_table, name, diff(table.loc[0,name], table.loc[1,name]))
+        table = table.set_value(len_table, name, diffabs(table.loc[0,name], table.loc[1,name]))
+    table['INDEX'] = [
+                         datetime.strftime(pd.index[limit], '%d-%m-%Y'),
+                         datetime.strftime(pd.index[0], '%d-%m-%Y'),
+                         'Difference, %',
+                         'Difference'
+                     ]
+    table = table.set_index('INDEX')
+
+    # table = pandas.DataFrame(table.values,
+    #                          index=[datetime.strftime(pd.index[limit], '%d-%m-%Y'),
+    #                                 datetime.strftime(pd.index[0], '%d-%m-%Y'),
+    #                                 'Difference, %',
+    #                                 'Difference'],
+    #                          columns=list(table))
+
+    return table
+
 
 def index(request):
     if request.session.has_key('key'):
@@ -98,7 +127,6 @@ def user_info(request):
     return HttpResponseRedirect(reverse('index'))
 
 
-# @cache_page(60 * 15)
 def statistics(request):
     if request.session.has_key('dw_info'):
 
@@ -131,7 +159,6 @@ def statistics(request):
                 return render(request, 'statapp/statistics.html', {'errors': errors, "shops1": form_data.getlist('shops')})
 
             dw = request.session['dw']
-            # print data['date_from']
             try:
                 pandas_res_by_turnover = dw.get_categories_sale(**data)
                 pandas_res_by_qty = dw.get_categories_sale(by='qty', **data)
@@ -142,15 +169,16 @@ def statistics(request):
 
             # turnover = pandas_res.sum(axis=1)
             # dates = pandas_res.index
-            result = split_df(pandas_res_by_turnover.index, pandas_res_by_turnover.sum(axis=1),
-                              pandas_res_by_qty.sum(axis=1), pandas_res_by_receipt_qty.sum(axis=1), 4)
-            table1_data = stat_table1(pandas_res_by_turnover, pandas_res_by_qty,pandas_res_by_receipt_qty)
-            # print pandas_res
-            # print result
+            # result = split_df(pandas_res_by_turnover.index, pandas_res_by_turnover.sum(axis=1),
+            #                   pandas_res_by_qty.sum(axis=1), pandas_res_by_receipt_qty.sum(axis=1), 4)
+            table1 = stat_table1(request, pandas_res_by_turnover, pandas_res_by_qty,
+                                             pandas_res_by_receipt_qty)
 
-
-            return render(request, 'statapp/statistics.html', {'show_tables':
-                True, 'pandas_list': result, 'table1_data': table1_data})
+            return render(request, 'statapp/statistics.html', {
+                            'show_tables': True, 'table': table1.T.to_html(
+                                classes="table table-hover table-striped",
+                                float_format=lambda x: '%.2f' % x
+                            )})
         return render(request, 'statapp/statistics.html', {})
 
     return HttpResponseRedirect(reverse('index'))

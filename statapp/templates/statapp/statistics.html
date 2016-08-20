@@ -28,7 +28,7 @@
 			<label for="shops" class="col-sm-2 control-label">Shops</label>
 			<div class="col-sm-10">
 				<select name="shops" id="shops"	class="form-control" multiple size="3">
-					<option disabled>Choose shops (for multiple choice press Ctrl))</option>
+					<option disabled>Choose shops (for multiple choice press 'Ctrl' or 'Command' on mac))</option>
 					{% for shop, title in request.session.dw_info.shops.items %}
 						<option value="{{ shop }}" {% if shop|get_str in shops1 %}selected{% endif %}
 						>{{ shop }},{{ title }}</option>
@@ -47,9 +47,9 @@
 		</div>
 </form>
 
-<div>
-	{% if show_tables %}
-    {% include "statapp/stat_turnover.html" %}
-	{% endif %}
-</div>
+
+{% if show_tables %}
+{% include "statapp/stat_turnover.html" %}
+{% endif %}
+
 {% endblock content %}
