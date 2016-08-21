@@ -4,7 +4,10 @@
 
 {% block content %}
     {% include "statapp/form.html" %}
-
+    <div class="text-center" id="loader">
+        <span>Loading ...</span>
+        <img src="{% static 'img/ajax-loader.gif' %}">
+    </div>
     {% if show_tables %}
     {% include "statapp/stat_turnover.html" %}
     {% endif %}

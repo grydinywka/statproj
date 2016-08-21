@@ -20,5 +20,6 @@ label {
 #table1 thead th {
 }
 
-.lead {
+#loader {
+    display: none;
 }

@@ -7,15 +7,24 @@ function open_turnover() {
             'beforeSend': function(xhr,setting) {
                 $('#table1').empty();
                 $('#messages div').empty();
+                $('#loader').show();
+
+                $('input, select, button').attr('readonly', 'readonly');
+			    $('input, select, button').attr('disabled', 'disabled');
             },
             'error': function(){
-                $('#table1').empty();
+//                $('#table1').empty();
+                $('#loader').hide();
                 $('#messages div').html('<div class="alert alert-warning">Error on server!</div>');
                 return false;
             },
             'success': function(data, status, xhr) {
                 var html = $(data), newform = html.find('form');
 
+                $('input, select, button').attr('readonly', false);
+			    $('input, select, button').attr('disabled', false);
+
+                $('#loader').hide();
                 if ( newform.length > 0 ) {
                     $('#messages div').html(html.find('#messages .alert'));
                     $('form').html(newform);
@@ -25,7 +34,7 @@ function open_turnover() {
                     $('#messages div').empty();
                     $('form').load('/form/');
                     $('#table1').html(html.find('#table1').children());
-                    $('#table2').html(html.find('#table2').children());
+//                    $('#table2').html(html.find('#table2').children());
                 }
             }
         });
