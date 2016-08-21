@@ -72,6 +72,15 @@ def stat_table1(pd, pd_qty, pd_receipt_qty):
     return table
 
 
+def get_table2(df, df_qty):
+    limit_df = len(df) - 1
+    report = pandas.DataFrame(df.values[limit_df]-df.values[0], index=df.columns, columns=['turnover`s change'])
+
+    return report.to_html(classes="table table-hover table-striped",
+                          float_format=lambda x: '%.2f' % x
+                          )
+
+
 def index(request):
     if request.session.has_key('key'):
         return HttpResponseRedirect(reverse('stat_form'))
@@ -173,13 +182,15 @@ def stat_form(request):
             #                   pandas_res_by_qty.sum(axis=1), pandas_res_by_receipt_qty.sum(axis=1), 4)
             table1 = stat_table1(pandas_res_by_turnover, pandas_res_by_qty,
                                              pandas_res_by_receipt_qty)
+            table2 = get_table2(df=pandas_res_by_turnover, df_qty=pandas_res_by_qty)
 
             return render(request, 'statapp/reports_stat.html', {
                             'show_tables': True, 'table1': table1.T.to_html(
                                 classes="table table-hover table-striped",
                                 float_format=lambda x: '%.2f' % x
                             ),
-                            "shops": form_data.getlist('shops')})
+                            "shops": form_data.getlist('shops'),
+                            "table2": table2})
         return render(request, 'statapp/stat_form.html', {})
 
     return HttpResponseRedirect(reverse('index'))

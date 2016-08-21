@@ -6,6 +6,7 @@ function open_turnover() {
             'dataType': 'html',
             'beforeSend': function(xhr,setting) {
                 $('#table1').empty();
+                $('#messages div').empty();
             },
             'error': function(){
                 $('#table1').empty();
@@ -24,6 +25,7 @@ function open_turnover() {
                     $('#messages div').empty();
                     $('form').load('/form/');
                     $('#table1').html(html.find('#table1').children());
+                    $('#table2').html(html.find('#table2').children());
                 }
             }
         });

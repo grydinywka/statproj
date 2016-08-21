@@ -3,10 +3,13 @@
 {% load util %}
 
 {% block content %}
+    {% include "statapp/form.html" %}
 
+    {% if show_tables %}
+    {% include "statapp/stat_turnover.html" %}
+    {% endif %}
 
-{% include "statapp/form.html" %}
-
-<div id="table1"></div>
+    <div id="table1"></div>
+    <div id="table2"></div>
 
 {% endblock content %}
