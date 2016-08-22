@@ -74,80 +74,76 @@ def stat_table1(pd, pd_qty, pd_receipt_qty):
     return table
 
 
-# def boundsReport(objects, valObjOnPage, request):
-#     allObjects = len(objects)
-#     if allObjects <= valObjOnPage and allObjects > 0:
-#         valObjOnPage = allObjects
-#     valPage = allObjects/valObjOnPage
-#     valStudOnLastPage = allObjects % valObjOnPage
-#     if valStudOnLastPage != 0:
-#         valPage += 1
-#
-#     page = request.GET.get('page', 1)
-#     print 'page =', page
-#     try:
-#         page = int(float(page))
-#     except ValueError:
-#         page = 1
-#     if page > valPage:
-#         page = valPage
-#     if  page < 1:
-#         page = 1
-#
-#     if page == valPage:
-#         large = allObjects
-#         if valStudOnLastPage > 0:
-#             little = large - valStudOnLastPage
-#         else:
-#             little = large - valObjOnPage
-#     else:
-#         large = valObjOnPage*page
-#         little = large - valObjOnPage
-#
-#     if little < 0:
-#         little = 0
-#     if large < 0:
-#         large = 0
-#
-#     return little, large
+# def get_products(request, dw, data, pandas_res_by_turnover)
 
-def get_table2(request, dw, data, pandas_res_by_turnover, df_qty2):
+
+def get_table2(request, dw, data, pandas_res_by_turnover, cat_num):
     try:
         date_from = request.session['dw_info']['date_from']
         date_to = request.session['dw_info']['date_to']
+
+        len_cat = len(pandas_res_by_turnover.columns)
+        # categ = [item for item in pandas_res_by_turnover.columns[0:len_cat-4]]
+        # categ = [item for item in pandas_res_by_turnover.columns[len_cat-4:len_cat]]
+        categ = pandas_res_by_turnover.columns[cat_num]
+        # print categ
         if data.has_key('date_from'):
-            pandas_prod_turn1 = dw.get_products_sale(date_from=data['date_from'], date_to=data['date_from'], categories=pandas_res_by_turnover.columns[0])
+            pandas_prod_turn1 = dw.get_products_sale(date_from=data['date_from'], date_to=data['date_from'],
+                                                     categories=categ)
             pandas_prod_qty1 = dw.get_products_sale(by='qty', date_from=data['date_from'], date_to=data['date_from'],
-                                                  categories=pandas_res_by_turnover.columns[0])
+                                                  categories=categ)
         else:
-            pandas_prod_turn1 = dw.get_products_sale(date_from=date_from, date_to=date_from, categories=pandas_res_by_turnover.columns[0])
+            pandas_prod_turn1 = dw.get_products_sale(date_from=date_from, date_to=date_from,
+                                                     categories=categ)
             pandas_prod_qty1 = dw.get_products_sale(by='qty', date_from=date_from, date_to=date_from,
-                                                  categories=pandas_res_by_turnover.columns[0])
+                                                  categories=categ)
         if data.has_key('date_to'):
-            pandas_prod_turn2 = dw.get_products_sale(date_from=data['date_to'],date_to=data['date_to'], categories=pandas_res_by_turnover.columns[0])
+            pandas_prod_turn2 = dw.get_products_sale(date_from=data['date_to'],date_to=data['date_to'],
+                                                     categories=categ)
             pandas_prod_qty2 = dw.get_products_sale(by='qty', date_from=data['date_to'], date_to=data['date_to'],
-                                                  categories=pandas_res_by_turnover.columns[0])
+                                                  categories=categ)
         else:
-            pandas_prod_turn2 = dw.get_products_sale(date_from=date_to,date_to=date_to, categories=pandas_res_by_turnover.columns[0])
+            pandas_prod_turn2 = dw.get_products_sale(date_from=date_to,date_to=date_to,
+                                                     categories=categ)
             pandas_prod_qty2 = dw.get_products_sale(by="qty",date_from=date_to,date_to=date_to,
-                                                  categories=pandas_res_by_turnover.columns[0])
+                                                  categories=categ)
     except Exception:
         messages.error(request, 'Try again because datawiz does not response!')
         return render(request, 'statapp/stat_form.html', {})
 
-    concat_df_turn = pandas.concat([pandas_prod_turn1,pandas_prod_turn2,pandas_prod_qty1,pandas_prod_qty2])
-    concat_df_turn = concat_df_turn.fillna(0)
-    # concat_df_qty = pandas.concat([pandas_prod_qty1,pandas_prod_qty2])
-    # concat_df_qty = concat_df_qty.fillna(0)
-    limit = len(concat_df_turn) - 1
-    report = pandas.DataFrame(concat_df_turn.values[1]-concat_df_turn.values[0],
-                              index=concat_df_turn.columns, columns=['turnover`s change'])
-    report['change selling'] = concat_df_turn.values[limit]-concat_df_turn.values[2]
-    report = report.loc[(report != 0).any(1)] # drop zero row
-    # print report[:]
-    # pagination
+    if pandas_prod_turn1.sum().sum() == 0 and pandas_prod_turn2.sum().sum() == 0:
+        return pandas.DataFrame().to_html(), pandas.DataFrame().to_html()
+    elif pandas_prod_turn1.sum().sum() == 0:
+        report = pandas.DataFrame(pandas_prod_qty2, index=pandas_prod_qty2.columns, columns=['change selling'])
+        report['turnover`s change'] = pandas_prod_turn2.values[0]
+        report = report.fillna(0)
+        report = report.loc[(report != 0).any(1)]
+        return report.to_html(classes="table table-hover table-striped",
+                          float_format=lambda x: '%.2f' % x), pandas.DataFrame().to_html()
+    elif pandas_prod_turn2.sum().sum() == 0:
+        report = pandas.DataFrame(pandas_prod_qty1, index=pandas_prod_qty1.columns, columns=['change selling'])
+        report['turnover`s change'] = pandas_prod_turn1.values[0]
+        report = report.fillna(0)
+        report = report.loc[(report != 0).any(1)]
+        return pandas.DataFrame().to_html(), report.to_html(classes="table table-hover table-striped",
+                          float_format=lambda x: '%.2f' % x)
+    else:
+        concat_df_turn = pandas.concat([pandas_prod_turn1,pandas_prod_turn2,pandas_prod_qty1,pandas_prod_qty2])
+        concat_df_turn = concat_df_turn.fillna(0)
 
-    return report.to_html(classes="table table-hover table-striped",
+        report = pandas.DataFrame(concat_df_turn.values[3]-concat_df_turn.values[2],
+                                  index=concat_df_turn.columns, columns=['change selling'])
+        report['turnover`s change'] = concat_df_turn.values[1]-concat_df_turn.values[0]
+    report = report.loc[(report != 0).any(1)] # drop zero row
+
+    # report = report.sort_values(by="change selling",ascending=0)
+    report_inc = report.loc[report['change selling'] > 0]
+    report_dec = report.loc[report['change selling'] < 0]
+
+    return report_inc.to_html(classes="table table-hover table-striped",
+                          float_format=lambda x: '%.2f' % x
+                          ),\
+           report_dec.to_html(classes="table table-hover table-striped",
                           float_format=lambda x: '%.2f' % x
                           )
 
@@ -221,6 +217,9 @@ def reports_stat(request):
         data= {}
         errors = {}
 
+        cat_num = form_data.get('cat_num', '1')
+        # print "CAT_NUM", cat_num
+
         if form_data.get('date_from'):
             try:
                 data['date_from'] = datetime.strptime(form_data.get('date_from').strip(), '%d-%m-%Y')
@@ -232,9 +231,10 @@ def reports_stat(request):
             except Exception:
                 errors['date_to'] = 'Input date at DD-MM-YYYY format or left blank.'
 
-        if form_data.getlist('shops'):
-            data['shops'] = form_data.getlist('shops')
+        if form_data.getlist('shops') and form_data.getlist('shops') != [u'']:
 
+            data['shops'] = form_data.getlist('shops')
+            print data['shops'], "DATASHOP"
             for shop in form_data.getlist('shops'):
                 if not int(shop) in request.session['dw_info']['shops'].keys():
                     errors['shops'] = 'some shop is not available for you %s' % (shop)
@@ -249,28 +249,21 @@ def reports_stat(request):
             pandas_res_by_turnover = dw.get_categories_sale(show='id', **data)
             pandas_res_by_qty = dw.get_categories_sale(by='qty', **data)
             pandas_res_by_receipt_qty = dw.get_categories_sale(by='receipts_qty', **data)
-            #   by products
-            # date_from = request.session['dw_info']['date_from']
-            # date_to = request.session['dw_info']['date_to']
-            # if data.has_key('date_from'):
-            #     pandas_prod_turn1 = dw.get_products_sale(date_from=data['date_from'], date_to=data['date_from'], categories=pandas_res_by_turnover.columns[0])
-            # else:
-            #     pandas_prod_turn1 = dw.get_products_sale(date_from=date_from, date_to=date_from, categories=pandas_res_by_turnover.columns[0])
-            # if data.has_key('date_to'):
-            #     pandas_prod_turn2 = dw.get_products_sale(date_from=data['date_to'],date_to=data['date_to'], categories=pandas_res_by_turnover.columns[0])
-            # else:
-            #     pandas_prod_turn2 = dw.get_products_sale(date_from=date_to,date_to=date_to, categories=pandas_res_by_turnover.columns[0])
+
         except Exception:
             messages.error(request, 'Try again because datawiz does not response!')
             return render(request, 'statapp/stat_form.html', {})
 
-        # turnover = pandas_res.sum(axis=1)
-        # dates = pandas_res.index
-        # result = split_df(pandas_res_by_turnover.index, pandas_res_by_turnover.sum(axis=1),
-        #                   pandas_res_by_qty.sum(axis=1), pandas_res_by_receipt_qty.sum(axis=1), 4)
         table1 = stat_table1(pandas_res_by_turnover, pandas_res_by_qty,
                                          pandas_res_by_receipt_qty)
-        table2 = get_table2(request, dw, data, pandas_res_by_turnover, pandas_res_by_qty)
+        table2, table3 = get_table2(request, dw, data, pandas_res_by_turnover, int(cat_num))
+
+        cat_val = len(pandas_res_by_turnover.columns)
+
+        # end_loading = False
+        # cat_num = int(cat_num) + 1
+        # if cat_num >= cat_val:
+        #     end_loading = True
 
         return render(request, 'statapp/reports_stat.html', {
                         'show_tables': True, 'table1': table1.T.to_html(
@@ -278,7 +271,7 @@ def reports_stat(request):
                             float_format=lambda x: '%.2f' % x
                         ),
                         "shops": form_data.getlist('shops'),
-                        "table2": table2
+                        "table2": table2, "table3": table3, 'cat_val': cat_val-1
         })
     return HttpResponseRedirect(reverse('stat_form'))
 

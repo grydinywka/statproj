@@ -2,6 +2,7 @@
 
 <form action="{% url 'reports' %}" method="post" enctype="multipart/form-data" role="form" class="form-horizontal">
     {% csrf_token %}
+		<input type="hidden" data-num-pages="25" data-page="{{ cat_num }}" id = "load_more" value="0" name="cat_num">
 
         <div class="form-group {% if errors.date_from %}has-error{% endif %}">
 			<label for="date_from" class="col-sm-2 control-label">Date from</label>

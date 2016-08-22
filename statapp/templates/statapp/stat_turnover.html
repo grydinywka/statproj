@@ -1,22 +1,36 @@
+{% load util %}
+
 <div id="table1">
     <span class="lead">Main data( Shops: {% for shop in shops %} #{{ shop }} {% empty %} all  shops {% endfor %} )
         :</span>
     {{ table1 | safe }}
 </div>
+<div class="text-center" id="nav">
+    <span>pagination by categories:</span>
+    <nav>
+        <ul class="pagination">
+            {% for p in cat_val|get_range %}
+            <li {% if p == 0 %}class="active"{% endif %}>
+                <a class="pg" value="{{ p }}">{{ p|add:'1' }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </nav>
+</div>
 
-<div id="table2">
-    {{ table2 | safe }}
-    <!--<nav>-->
-        <!--<ul class="pagination">-->
-        <!--<li><a href="#">&laquo;</a></li>-->
-        <!--<li><a href="#">1</a></li>-->
-        <!--<li class="active"><a href="#">2</a></li>-->
-        <!--<li><a href="#">3</a></li>-->
-        <!--<li><a href="#">4</a></li>-->
-        <!--<li><a href="#">5</a></li>-->
-        <!--<li><a href="#">&raquo;</a></li>-->
-        <!--</ul>-->
-    <!--</nav>-->
+
+<div id="table2" class="col-sm-12">
+
+
+    <div class="col-sm-6">
+        <span class="lead">Products that increased in selling</span>
+        {{ table2 | safe }}
+    </div>
+    <div class="col-sm-6">
+
+        <span class="lead">Products that decreased in selling</span>
+        {{ table3 |safe }}
+    </div>
 </div>
 
 <!--&gt;>> str(df.index[0].date())-->

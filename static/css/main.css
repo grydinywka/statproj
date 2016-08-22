@@ -29,3 +29,15 @@ a.disabled {
     pointer-events: none;
     cursor: default;
 }
+
+#table2 table {
+    /*width: 45%;
+    display: inline-block;
+
+    margin: 10px;*/
+    vertical-align: top;
+}
+
+#table2 {
+    margin-top: 40px;
+}
