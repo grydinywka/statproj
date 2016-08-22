@@ -19,11 +19,11 @@ from statapp import views
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
-    url(r'^login$', views.login, name='login'),
-    url(r'^logout$', views.logout, name='logout'),
+    url(r'^login/$', views.login, name='login'),
+    url(r'^logout/$', views.logout, name='logout'),
     url(r'^stat_form/$', views.stat_form, name='stat_form'),
     url(r'^form/$', views.form, name='form'),
-    url(r'^reports_stat$', views.reports_stat, name='reports'),
-    url(r'^userinfo$', views.user_info, name='user_info'),
+    url(r'^reports_stat/$', views.reports_stat, name='reports'),
+    url(r'^userinfo/$', views.user_info, name='user_info'),
     url(r'^admin/', admin.site.urls),
 ]

@@ -149,7 +149,8 @@ CACHES = {
          "OPTIONS": {
              "PASSWORD": redis_url.password,
              "DB": 0,
-         }
+         },
+         'ITEM_SIZE_MAX': 10
     }
 }
 
