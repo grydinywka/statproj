@@ -11,7 +11,7 @@
         <ul class="pagination">
             {% for p in cat_val|get_range %}
             <li {% if p == 0 %}class="active"{% endif %}>
-                <a class="pg" value="{{ p }}">{{ p|add:'1' }}</a>
+                <a href="#" class="pg" value="{{ p }}">{{ p|add:'1' }}</a>
             </li>
             {% endfor %}
         </ul>

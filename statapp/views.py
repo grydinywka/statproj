@@ -166,10 +166,10 @@ def login(request):
         }
 
         try:
-            # if data["MyClientID"] and data["MyClientSecret"]:
-            dw = datawiz.DW(data["MyClientID"], data["MyClientSecret"])
-            # else:
-            #     dw = datawiz.DW()
+            if data["MyClientID"] and data["MyClientSecret"]:
+                dw = datawiz.DW(data["MyClientID"], data["MyClientSecret"])
+            else:
+                dw = datawiz.DW()
             data['dw'] = dw.get_client_info()
         except Exception as e:
             messages.error(request, "Please, type correct key and secret, %s" % e)

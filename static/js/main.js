@@ -1,10 +1,11 @@
 function open_turnover() {
-    $('#get_stat').click(function(event) {
+    $('#get_stat, .pg').click(function(event) {
         var form = $('form');
 
         form.ajaxForm({
 //            'url': '/reports_stat/',
             'dataType': 'html',
+
             'beforeSend': function(xhr,setting) {
                 $('#table1').empty();
                 $('#table2').empty();
@@ -58,14 +59,12 @@ function open_turnover() {
 }
 
 function load_more() {
-    $('.pg').click(function(){
-//
+    $('.pg').click(function(event){
         var val1 = $(this).attr("value");
 
-//        $('#load_more').attr("value", val1);
+        event.preventDefault();
         $('a.pg').parent().removeClass('active');
         $(this).parent().addClass('active');
-//        alert($('#load_more').val());
         $.ajax({
             'url': '/reports_stat/',
             'dataType': 'html',
@@ -90,13 +89,12 @@ function load_more() {
                     $('#messages div').html(html.find('#messages .alert'));
                     $('form').html(newform);
 
-                    open_turnover();
+
                 } else {
                     $('#messages div').empty();
                     $('#table1').html(html.find('#table1').children());
                     $('#table2').html(html.find('#table2').children());
                 }
-                load_more();
             },
             'beforeSend': function(xhr,setting) {
                 $('#table1').empty();
@@ -112,7 +110,6 @@ function load_more() {
                 $('.help-block').empty();
             },
             'error': function(){
-//                $('#table1').empty();
                 $('input, select, button').attr('readonly', false);
 			    $('input, select, button').attr('disabled', false);
                 $('a').removeClass('disabled');
@@ -127,5 +124,4 @@ function load_more() {
 
 $(document).ready(function() {
     open_turnover();
-    load_more();
 });
