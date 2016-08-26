@@ -7,8 +7,6 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from dwapi import datawiz
 import pandas
-from django.views.decorators.cache import cache_page
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 requests_cache.install_cache('test_cache', backend='memory', expire_after=300)
 
@@ -72,9 +70,6 @@ def stat_table1(pd, pd_qty, pd_receipt_qty):
     #                          columns=list(table))
 
     return table
-
-
-# def get_products(request, dw, data, pandas_res_by_turnover)
 
 
 def get_table2(request, dw, data, pandas_res_by_turnover, cat_num):
@@ -166,7 +161,7 @@ def login(request):
         }
 
         try:
-            if data["MyClientID"] and data["MyClientSecret"]:
+            if data["MyClientID"] or data["MyClientSecret"]:
                 dw = datawiz.DW(data["MyClientID"], data["MyClientSecret"])
             else:
                 dw = datawiz.DW()

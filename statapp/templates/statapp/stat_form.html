@@ -2,6 +2,22 @@
 {% load static from staticfiles %}
 {% load util %}
 
+{% block infologout %}
+    {% if request.session.key %}
+    <ul class="nav navbar-nav navbar-right">
+        <li><a href="{% url 'user_info' %}"><span class="glyphicon glyphicon-user"></span>
+            {{ request.session.key }}</a></li>
+        <li><a href="{% url 'logout' %}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+    </ul>
+    {% else %}
+    <ul class="nav navbar-nav navbar-right">
+        <li><a href="{% url 'user_info' %}"><span class="glyphicon glyphicon-user"></span>
+            {{ request.session.key }}</a></li>
+        <li><a href="{% url 'logout' %}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+    </ul>
+    {% endif %}
+{% endblock infologout %}
+
 {% block content %}
 
     {% include "statapp/form.html" %}

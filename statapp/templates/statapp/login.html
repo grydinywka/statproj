@@ -1,9 +1,12 @@
 {% extends "statapp/base.html" %}
 {% load static from staticfiles %}
 
+{% block infologout %}{% endblock infologout %}
+
 {% block content %}
     <p>{{ request.session.key }}</p>
     <p>{{ request.session.secret }}</p>
+	<p class="lead">Leave blank the next two fields for login as test user!</p>
     <form action="{% url 'login' %}" method="post">
         {% csrf_token %}
 
