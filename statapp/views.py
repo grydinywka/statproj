@@ -205,6 +205,10 @@ def stat_form(request):
     return HttpResponseRedirect(reverse('index'))
 
 
+def date_trunc(date):
+    return date.replace(hour=0, minute=0, second=0, microsecond=0)
+
+
 # @cache_page(900)
 def reports_stat(request):
     if request.method == 'POST' and request.POST.get('get_stat') is not None:
@@ -220,11 +224,36 @@ def reports_stat(request):
                 data['date_from'] = datetime.strptime(form_data.get('date_from').strip(), '%d-%m-%Y')
             except Exception:
                 errors['date_from'] = 'Input date at DD-MM-YYYY format or left blank.'
+            else:
+                if date_trunc(data['date_from']) > date_trunc(request.session['dw_info']['date_to']):
+                    errors['date_from'] = 'Date from do not allow be more than %s' % (datetime.strftime(
+                        request.session['dw_info']['date_to'], '%d-%m-%Y')
+                    )
+                elif date_trunc(data['date_from']) < date_trunc(request.session['dw_info']['date_from']):
+                    errors['date_from'] = 'Date to do not allow be less than %s' % (datetime.strftime(
+                        request.session['dw_info']['date_from'], '%d-%m-%Y')
+                    )
         if form_data.get('date_to'):
             try:
                 data['date_to'] = datetime.strptime(form_data.get('date_to').strip(), '%d-%m-%Y')
             except Exception:
                 errors['date_to'] = 'Input date at DD-MM-YYYY format or left blank.'
+            else:
+                if date_trunc(data['date_to']) < date_trunc(request.session['dw_info']['date_from']):
+                    errors['date_to'] = 'Date from do not allow be less than %s' % (datetime.strftime(
+                        request.session['dw_info']['date_from'], '%d-%m-%Y'),
+                    )
+                elif date_trunc(data['date_to']) > date_trunc(request.session['dw_info']['date_to']):
+                    errors['date_from'] = 'Date from do not allow be more than %s' % (datetime.strftime(
+                        request.session['dw_info']['date_to'], '%d-%m-%Y')
+                    )
+
+        if form_data.get('date_from') and form_data.get('date_to'):
+            if data['date_to'] < data['date_from']:
+                if errors.has_key('date_from'):
+                    errors['date_from'] += '. Date from must more or equal to Date to'
+                else:
+                    errors['date_from'] = 'Date from must more or equal to Date to'
 
         if form_data.getlist('shops') and form_data.getlist('shops') != [u'']:
 
