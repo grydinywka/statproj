@@ -226,11 +226,11 @@ def reports_stat(request):
                 errors['date_from'] = 'Input date at DD-MM-YYYY format or left blank.'
             else:
                 if date_trunc(data['date_from']) > date_trunc(request.session['dw_info']['date_to']):
-                    errors['date_from'] = 'Date from do not allow be more than %s' % (datetime.strftime(
+                    errors['date_from'] = '`Date from` do not allow be more than %s' % (datetime.strftime(
                         request.session['dw_info']['date_to'], '%d-%m-%Y')
                     )
                 elif date_trunc(data['date_from']) < date_trunc(request.session['dw_info']['date_from']):
-                    errors['date_from'] = 'Date to do not allow be less than %s' % (datetime.strftime(
+                    errors['date_from'] = '`Date from` do not allow be less than %s' % (datetime.strftime(
                         request.session['dw_info']['date_from'], '%d-%m-%Y')
                     )
         if form_data.get('date_to'):
@@ -240,11 +240,11 @@ def reports_stat(request):
                 errors['date_to'] = 'Input date at DD-MM-YYYY format or left blank.'
             else:
                 if date_trunc(data['date_to']) < date_trunc(request.session['dw_info']['date_from']):
-                    errors['date_to'] = 'Date from do not allow be less than %s' % (datetime.strftime(
+                    errors['date_to'] = '`Date to` do not allow be less than %s' % (datetime.strftime(
                         request.session['dw_info']['date_from'], '%d-%m-%Y'),
                     )
                 elif date_trunc(data['date_to']) > date_trunc(request.session['dw_info']['date_to']):
-                    errors['date_from'] = 'Date from do not allow be more than %s' % (datetime.strftime(
+                    errors['date_to'] = '`Date to` do not allow be more than %s' % (datetime.strftime(
                         request.session['dw_info']['date_to'], '%d-%m-%Y')
                     )
 
