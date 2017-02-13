@@ -55,11 +55,17 @@ def stat_table1(pd, pd_qty, pd_receipt_qty):
         table = table.set_value(pre_len_table, name, diff(table.loc[0,name], table.loc[1,name]))
         table = table.set_value(len_table, name, diffabs(table.loc[0,name], table.loc[1,name]))
     table['INDEX'] = [
-                         datetime.strftime(pd.index[limit], '%d-%m-%Y'),
-                         datetime.strftime(pd.index[0], '%d-%m-%Y'),
+                         pd.index[limit],
+                         pd.index[0],
                          'Difference, %',
                          'Difference'
                      ]
+    # table['INDEX'] = [
+    #                      datetime.strftime(pd.index[limit], '%d-%m-%Y'),
+    #                      datetime.strftime(pd.index[0], '%d-%m-%Y'),
+    #                      'Difference, %',
+    #                      'Difference'
+    #                  ]
     table = table.set_index('INDEX')
 
     # table = pandas.DataFrame(table.values,

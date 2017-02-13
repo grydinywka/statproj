@@ -3,10 +3,9 @@
 Settings for testing scripts\
 
 """
-import random
-
+from dwapi import datawiz
 import pandas as pd
-from src.pythonAPI.dwapi import datawiz
+import random
 
 shops = [595, 601, 641]
 

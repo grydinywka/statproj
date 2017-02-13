@@ -1,8 +1,10 @@
+import pandas as pd
 import unittest
-
-from src.pythonAPI.dwapi import SettingsManager
-from src.pythonAPI.dwapi import datawiz
-
+import datetime
+from dwapi import datawiz
+import random
+import pandas as pd
+from dwapi.test.settings import SettingsManager
 
 class TestMain(unittest.TestCase):
     
@@ -25,22 +27,22 @@ class TestMain(unittest.TestCase):
         products = self.TEST_SETTINGS.get_samples('products')
         shops = self.TEST_SETTINGS.get_samples('shops')
         df = self.dw.get_products_sale(products = products,
-                                       by='turnover',
-                                       shops = shops,
-                                       date_from = interval[0],
-                                       date_to = interval[1],
-                                       interval = datawiz.DAYS)
+                                by='turnover',
+                                shops = shops,
+                                date_from = interval[0],
+                                date_to = interval[1],
+                                interval = datawiz.DAYS)
         
         list_colums = df.columns
         if df.empty:
             return True
         result = 0
         for d_f,d_t in self.TEST_SETTINGS.split_date_range(interval):
-            df_periods = self.dw.get_products_sale(products = products, by='turnover',
-                                                   shops = shops,
-                                                   date_from = d_f,
-                                                   date_to = d_t,
-                                                   interval = datawiz.DAYS)
+            df_periods = self.dw.get_products_sale(products = products,by='turnover',
+                                    shops = shops,
+                                    date_from = d_f,
+                                    date_to = d_t,
+                                    interval = datawiz.DAYS)
             result += df_periods.sum().sum()
         self.assertEqual(df.sum().sum() , result)
 
@@ -58,10 +60,10 @@ class TestMain(unittest.TestCase):
             return True
         result = 0
         for d_f,d_t in self.TEST_SETTINGS.split_date_range(interval):
-            df_periods = self.dw.get_categories_sale(categories = categories, by='turnover',
-                                                     date_from = d_f,
-                                                     date_to = d_t,
-                                                     interval = datawiz.DAYS)
+            df_periods = self.dw.get_categories_sale(categories = categories,by='turnover', 
+                                date_from = d_f,
+                                date_to = d_t,
+                                interval = datawiz.DAYS )
             
             result += df_periods[list_colums].sum().sum()
         self.assertEqual(df.sum().sum() , result)
