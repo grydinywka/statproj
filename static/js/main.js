@@ -77,7 +77,7 @@ function load_more() {
                 'date_to': $('form #date_to').val(),
                 'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
                 'get_stat': true,
-                'shops':  $('form #shops').val()[0],
+                'shops':  $('form #shops').val(),
             },
             'success': function(data, status, xhr) {
                 var html = $(data), newform = html.find('form');

@@ -117,36 +117,43 @@ def get_table2(request, dw, data, pandas_res_by_turnover, cat_num):
     if pandas_prod_turn1.sum().sum() == 0 and pandas_prod_turn2.sum().sum() == 0:
         return pandas.DataFrame().to_html(), pandas.DataFrame().to_html(), name_category
     elif pandas_prod_turn1.sum().sum() == 0:
-        report = pandas.DataFrame(pandas_prod_qty2, index=pandas_prod_qty2.columns, columns=['change selling'])
+        report = pandas.DataFrame(pandas_prod_qty2.columns, columns=['product'])
+        report['change selling'] = pandas_prod_qty2
+        # report = pandas.DataFrame(pandas_prod_qty2, index=pandas_prod_qty2.columns, columns=['change selling'])
         report['turnover`s change'] = pandas_prod_turn2.values[0]
         report = report.fillna(0)
         report = report.loc[(report != 0).any(1)]
-        return report.to_html(classes="table table-hover table-striped",
+        return report.to_html(index=False, classes="table table-hover table-striped",
                           float_format=lambda x: '%.2f' % x), pandas.DataFrame().to_html(), name_category
     elif pandas_prod_turn2.sum().sum() == 0:
-        report = pandas.DataFrame(pandas_prod_qty1, index=pandas_prod_qty1.columns, columns=['change selling'])
+        report = pandas.DataFrame(pandas_prod_qty1.columns, columns=['product'])
+        report['change selling'] = pandas_prod_qty1
+        # report = pandas.DataFrame(pandas_prod_qty1, index=pandas_prod_qty1.columns, columns=['change selling'])
         report['turnover`s change'] = pandas_prod_turn1.values[0]
         report = report.fillna(0)
         report = report.loc[(report != 0).any(1)]
-        return pandas.DataFrame().to_html(), report.to_html(classes="table table-hover table-striped",
+        return pandas.DataFrame().to_html(), report.to_html(index=False, classes="table table-hover table-striped",
                           float_format=lambda x: '%.2f' % x), name_category
     else:
         concat_df_turn = pandas.concat([pandas_prod_turn1,pandas_prod_turn2,pandas_prod_qty1,pandas_prod_qty2])
         concat_df_turn = concat_df_turn.fillna(0)
 
-        report = pandas.DataFrame(concat_df_turn.values[3]-concat_df_turn.values[2],
-                                  index=concat_df_turn.columns, columns=['change selling'])
+        report = pandas.DataFrame(concat_df_turn.columns, columns=['product'])
+        report['change selling'] = concat_df_turn.values[3]-concat_df_turn.values[2]
+        # report = pandas.DataFrame(concat_df_turn.values[3]-concat_df_turn.values[2],
+        #                           index=concat_df_turn.columns, columns=['change selling'])
         report['turnover`s change'] = concat_df_turn.values[1]-concat_df_turn.values[0]
+    report.index.name = 'product'
     report = report.loc[(report != 0).any(1)] # drop zero row
 
     # report = report.sort_values(by="change selling",ascending=0)
     report_inc = report.loc[report['change selling'] > 0]
     report_dec = report.loc[report['change selling'] < 0]
 
-    return report_inc.to_html(classes="table table-hover table-striped",
+    return report_inc.to_html(classes="table table-hover table-striped", index=False,
                           float_format=lambda x: '%.2f' % x
                           ),\
-           report_dec.to_html(classes="table table-hover table-striped",
+           report_dec.to_html(classes="table table-hover table-striped", index=False,
                           float_format=lambda x: '%.2f' % x
                           ), name_category
 
