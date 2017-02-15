@@ -20,13 +20,13 @@
 
 
 <div id="table2" class="col-sm-12">
+    <p class="lead text-center">Category: {{name_category}}</p>
 
-
-    <div class="col-sm-6">
+    <div class="col-sm-5">
         <span class="lead">Products that increased in selling</span>
         {{ table2 | safe }}
     </div>
-    <div class="col-sm-6">
+    <div class="col-sm-offset-2 col-sm-5">
 
         <span class="lead">Products that decreased in selling</span>
         {{ table3 |safe }}

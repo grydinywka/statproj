@@ -65,17 +65,19 @@ function load_more() {
         event.preventDefault();
         $('a.pg').parent().removeClass('active');
         $(this).parent().addClass('active');
+
         $.ajax({
             'url': '/reports_stat/',
             'dataType': 'html',
             'type': 'post',
+            'traditional': true,
             'data': {
                 'cat_num': val1,
                 'date_from': $('form #date_from').val(),
                 'date_to': $('form #date_to').val(),
                 'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val(),
                 'get_stat': true,
-                'shops':  $('form #shops').val(),
+                'shops':  $('form #shops').val()[0],
             },
             'success': function(data, status, xhr) {
                 var html = $(data), newform = html.find('form');
