@@ -17,7 +17,7 @@ pytz==2016.6.1
 redis==2.10.5
 requests==2.11.0
 requests-cache==0.4.12
-oauthlib>=0.6.2
+requests_oauthlib>=0.6.2
 rq==0.6.0
 six==1.10.0
 static3==0.7.0
