@@ -64,8 +64,9 @@ class DW(Auth):
                 if all([x if x in lst else None for x in var]):
                     return var
                 raise ValueError('Incorrect param value <%s>' % var)
-            else:
-                return value_in_list(var, lst)
+            elif var in lst:
+                return [var]
+            raise ValueError('Incorrect param value <%s>' % var)
         def stringify_date(date, format='%Y-%m-%d'):
             if isinstance(date, str):
                 datetime.datetime.strptime(date, format)
@@ -242,7 +243,7 @@ class DW(Auth):
                           date_to = None,
                           weekday = None,
                           interval = "days",
-                          by = "turnover",
+                          by = None,
                           show = "id",
                           view_type = "represent"):
         """
@@ -313,7 +314,7 @@ class DW(Auth):
                   'shops': shops,
                   'products': products,
                   'categories':  categories,
-                  'select' : by,
+                  'select' : by or ["turnover"],
                   'interval': interval,
                   'weekday': weekday,
                   'show': show
@@ -336,7 +337,7 @@ class DW(Auth):
                             date_to = None,
                             weekday = None,
                             interval = 'days',
-                            by = 'turnover',
+                            by = None,
                             show = 'name',
                             view_type = 'represent'):
         """
@@ -401,11 +402,10 @@ class DW(Auth):
                   'date_to': date_to,
                   'shops': shops,
                   'categories':  categories,
-                  'select' : by,
+                  'select' : by or ["turnover"],
                   'interval': interval,
                   'weekday': weekday,
                   'show': show}
-
         result = self._post(GET_CATEGORIES_SALE_URI, data = params)["results"]
         # Якщо результат коректний, повертаємо DataFrame з результатом, інакше - пустий DataFrame
         if result:
@@ -688,10 +688,11 @@ class DW(Auth):
 
 
         """
-
-        if not by in ["product", "category"]:
+        if not isinstance(by, (str, unicode)):
             raise TypeError("Incorrect param type")
-        return dict(self._get(SEARCH, params = {'q': query, 'by': by, 'level':level})['results'])
+        if not by in ["product", "category", "both"]:
+            raise TypeError("Incorrect param type")
+        return dict(self._get(SEARCH, params = {'q': query, 'select': by, 'level':level})['results'])
 
     def get_shops(self):
         """
@@ -1012,7 +1013,7 @@ class DW(Auth):
                            categories=None,
                            products=None,
                            show='id',
-                           by='stock_qty',
+                           by=None,
                            view_type="represent"):
         """
         Parameters:
@@ -1072,7 +1073,7 @@ class DW(Auth):
                   'categories': categories,
                   'products': products,
                   'show': show,
-                  'select': by}
+                  'select': ['stock_qty']}
         result = self._post(GET_PRODUCTS_STOCK, data=params)["results"]
         if result:
             dataframe = pd.DataFrame.from_records(result)
@@ -1090,7 +1091,7 @@ class DW(Auth):
                              shops=None,
                              categories=None,
                              show='id',
-                             by='stock_qty',
+                             by=None,
                              view_type="represent"):
         """
         Parameters:
@@ -1145,7 +1146,7 @@ class DW(Auth):
                   'shops': shops,
                   'categories': categories,
                   'show': show,
-                  'select': by}
+                  'select': by or ['stock_qty']}
 
         result = self._post(GET_CATEGORIES_STOCK, data=params)['results']
         if result:
