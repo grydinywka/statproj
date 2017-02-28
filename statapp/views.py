@@ -118,7 +118,7 @@ def get_table2(request, dw, data, pandas_res_by_turnover, cat_num):
         return pandas.DataFrame().to_html(), pandas.DataFrame().to_html(), name_category
     elif pandas_prod_turn1.sum().sum() == 0:
         report = pandas.DataFrame(pandas_prod_qty2.columns, columns=['product'])
-        report['change selling'] = pandas_prod_qty2
+        report['change selling'] = pandas_prod_qty2.values[0]
         # report = pandas.DataFrame(pandas_prod_qty2, index=pandas_prod_qty2.columns, columns=['change selling'])
         report['turnover`s change'] = pandas_prod_turn2.values[0]
         report = report.fillna(0)
@@ -230,7 +230,8 @@ def reports_stat(request):
         form_data = request.POST
         data= {}
         errors = {}
-        dw = request.session['dw']
+        # dw = request.session['dw']
+        dw = datawiz.DW()
 
         cat_num = form_data.get('cat_num', '1')
         # print "CAT_NAME", name_category
@@ -294,7 +295,7 @@ def reports_stat(request):
 
         except Exception as e:
             # messages.error(request, 'Try again because datawiz does not response! ' + str(e))
-            messages.error(request, str(e))
+            messages.error(request, str(e) + '1')
             return render(request, 'statapp/stat_form.html', {})
 
         table1 = stat_table1(pandas_res_by_turnover, pandas_res_by_qty,
