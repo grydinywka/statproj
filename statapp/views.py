@@ -243,13 +243,15 @@ def reports_stat(request):
                 errors['date_from'] = 'Input date at DD-MM-YYYY format or left blank.'
             else:
                 if date_trunc(data['date_from']) > date_trunc(request.session['dw_info']['date_to']):
-                    errors['date_from'] = '`Date from` do not allow be less than %s' % (datetime.strftime(
+                    errors['date_from'] = '`Date from` do not allow be more than %s' % (datetime.strftime(
                         request.session['dw_info']['date_to'], '%d-%m-%Y')
                     )
                 elif date_trunc(data['date_from']) < date_trunc(request.session['dw_info']['date_from']):
-                    errors['date_from'] = '`Date from` do not allow be more than %s' % (datetime.strftime(
+                    errors['date_from'] = '`Date from` do not allow be less than %s' % (datetime.strftime(
                         request.session['dw_info']['date_from'], '%d-%m-%Y')
                     )
+        else:
+            errors['date_from'] = 'Date from field is required!'
 
         if form_data.get('date_to'):
             try:
@@ -258,13 +260,15 @@ def reports_stat(request):
                 errors['date_to'] = 'Input date at DD-MM-YYYY format or left blank.'
             else:
                 if date_trunc(data['date_to']) < date_trunc(request.session['dw_info']['date_from']):
-                    errors['date_to'] = '`Date to` do not allow be more than %s' % (datetime.strftime(
+                    errors['date_to'] = '`Date to` do not allow be less than %s' % (datetime.strftime(
                         request.session['dw_info']['date_from'], '%d-%m-%Y'),
                     )
                 elif date_trunc(data['date_to']) > date_trunc(request.session['dw_info']['date_to']):
-                    errors['date_to'] = '`Date to` do not allow be less than %s' % (datetime.strftime(
+                    errors['date_to'] = '`Date to` do not allow be more than %s' % (datetime.strftime(
                         request.session['dw_info']['date_to'], '%d-%m-%Y')
                     )
+        else:
+            errors['date_to'] = 'Date to field is required!'
 
         if form_data.get('date_from') and form_data.get('date_to'):
             if data['date_to'] < data['date_from']:
@@ -280,8 +284,8 @@ def reports_stat(request):
             for shop in form_data.getlist('shops'):
                 if not int(shop) in request.session['dw_info']['shops'].keys():
                     errors['shops'] = 'some shop is not available for you %s' % (shop)
-        # else:
-        #     print form_data.get('shops'), "DATASHOP"
+        else:
+            print form_data.get('shops'), "DATASHOP"
 
         if errors:
             messages.error(request, 'Please correct errors!')

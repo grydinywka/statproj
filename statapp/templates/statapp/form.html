@@ -8,7 +8,8 @@
         <div class="form-group {% if errors.date_from %}has-error{% endif %}">
 			<label for="date_from" class="col-sm-2 control-label">Date from</label>
 			<div class="col-sm-10">
-			<input type="text" class="form-control" id="date_from" value="{{ request.POST.date_from }}"
+			<input type="text" class="form-control" id="date_from"
+				   value="{% if request.POST.date_from %}{{ request.POST.date_from }}{% else %}19-10-2015{% endif %}"
 				   name="date_from" placeholder="DD-MM-YYYY">
 			<span class="help-block">{{ errors.date_from }}</span>
 			</div>
@@ -17,7 +18,9 @@
 		<div class="form-group {% if errors.date_to %}has-error{% endif %}">
 			<label for="date_to" class="col-sm-2 control-label">Date to</label>
 			<div class="col-sm-10">
-				<input type="text" class="form-control" id="date_to" value="{{ request.POST.date_to }}" name="date_to"
+				<input type="text" class="form-control" id="date_to"
+					   value="{% if request.POST.date_to %}{{ request.POST.date_to }}{% else %}18-11-2015{% endif %}"
+					   name="date_to"
 					   placeholder="DD-MM-YYYY">
 				<span class="help-block">{{ errors.date_to }}</span>
 			</div>
